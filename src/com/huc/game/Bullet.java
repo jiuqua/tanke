@@ -106,7 +106,8 @@ public class Bullet {
         }
     }
 
-    public void move() {
+    public void move(double bonus) {
+        this.speed *= bonus;
         int currentSpeed = enemy ? enemyBulletSpeed : speed; // 敌军子弹使用较慢速度
         switch (direction) {
             case 0:

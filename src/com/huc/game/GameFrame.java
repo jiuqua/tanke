@@ -156,7 +156,7 @@ public class GameFrame extends Frame {
                             // 根据类型和波次计算血量
                             int hp = calculateEnemyHP(type, wave);
                             
-                            Tank enemy = new Tank(spawnX, 50, true, type, hp);
+                            Tank enemy = new Tank(spawnX, 50, true, type, hp / 2);
                             tanks.add(enemy);
                         }
                     }
@@ -795,7 +795,7 @@ public class GameFrame extends Frame {
                 gps.fillRect(t.getX(), t.getY(), 35, 35);
             }
         }
-        
+
         t.move(this.moveSpeedBonus);
 
         // 绘制地雷
@@ -861,7 +861,7 @@ public class GameFrame extends Frame {
         for (int i = 0; i < bullets.size(); i++) {
             Bullet b = bullets.get(i);
             b.draw(gps);
-            b.move();
+            b.move(this.bulletSpeedBonus);
 
             // 子弹击中墙壁
             for (int j = 0; j < walls.size(); j++) {
