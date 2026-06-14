@@ -921,7 +921,12 @@ public class GameFrame extends Frame {
                         score += 100;
                         money += 100; // 击败敌人奖励100金币
                         explodes.add(new Explode(b.getX(), b.getY()));
-                        
+
+                        // BOSS 敌人额外奖励
+                        if (enemy.getEnemyType() == Tank.EnemyType.BOSS) {
+                            money += 100;
+                            applyKillRewards();
+                        }
                         // 击杀爆炸效果（30%几率触发）
                         if (hasKillExplosion) {
                             for (int k = 0; k < tanks.size(); k++) {
