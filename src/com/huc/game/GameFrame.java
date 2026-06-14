@@ -615,7 +615,39 @@ public class GameFrame extends Frame {
         defenseLevel = 0;
         
         // 保留地图墙体（不清空），只重置玩家状态
-        
+        // 初始化树木
+        for (int i = 0; i < 10; i++) {
+            Tree e = new Tree(225 + 35 * i, 150);
+            trees.add(e);
+        }
+
+        // 初始化墙壁 - 地图边界和中间障碍
+        // 上方墙壁（网格对齐：x=35*6=210, y=35*6=210）
+        for (int i = 0; i < 8; i++) {
+            walls.add(new Wall(210 + 35 * i, 210, false));
+        }
+        // 左侧金属墙（网格对齐：x=35*3=105, y=35*7=245）
+        for (int i = 0; i < 4; i++) {
+            walls.add(new Wall(105, 245 + 35 * i, true));
+        }
+        // 右侧金属墙（网格对齐：x=35*19=665, y=35*7=245）
+        for (int i = 0; i < 4; i++) {
+            walls.add(new Wall(665, 245 + 35 * i, true));
+        }
+        // 下方普通墙（网格对齐：x=35*10=350, y=35*13=455）
+        for (int i = 0; i < 5; i++) {
+            walls.add(new Wall(350 + 35 * i, 455, false));
+        }
+
+        // 初始化河流
+        for (int i = 0; i < 3; i++) {
+            waters.add(new Water(500 + 35 * i, 300));
+        }
+
+        // 初始化血量道具（放在玩家可以到达的位置）
+        bloods.add(new Blood(450, 250));
+        bloods.add(new Blood(150, 350));
+
         // 重置爱心
         bloods.clear();
         bloods.add(new Blood(450, 250));
