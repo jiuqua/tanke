@@ -161,17 +161,6 @@ public class Bullet {
         return hasPenetration;
     }
 
-    public void hit(List<Tank> list) {
-        for (int i = 0; i < list.size(); i++) {
-            Tank tank = list.get(i);
-            if (this.rect().intersects(tank.rect()) && this.enemy != tank.enemy) {
-                tank.isAlive = false;
-                list.remove(i);
-                i--;
-            }
-        }
-    }
-
     public int getX() { return x; }
     public int getY() { return y; }
     public boolean isEnemy() { return enemy; }

@@ -15,7 +15,6 @@ public class ImageUtil {
             URL url = f.toURI().toURL();
             return ImageIO.read(url);
         } catch (Exception e) {
-            //TODO Auto-generated catch block
            e.printStackTrace();
         }
         return null;
