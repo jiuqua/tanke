@@ -44,6 +44,7 @@ public class MainFrame extends JFrame {
             new GameFrame();
             dispose();
         });
+        repaint();
 
     }
 
