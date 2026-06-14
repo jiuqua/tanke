@@ -44,7 +44,7 @@ public class MainFrame extends JFrame {
             new GameFrame();
             dispose();
         });
-
+        this.repaint();
     }
 
     public static void main(String[] args)throws Exception {
