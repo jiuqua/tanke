@@ -167,12 +167,14 @@ public class Tank {
         lastMineTime = System.currentTimeMillis();
     }
 
-    public void move() {
+    public void move(double speedBonus) {
         if (!isAlive) return;
 
         if (direction < 4) {
             img = images[direction];
         }
+        this.speed *= (int) speedBonus;
+
 
         int currentSpeed = enemy ? enemySpeed : speed; // 敌军使用较慢速度
 
@@ -426,7 +428,7 @@ public class Tank {
             }
         }
         
-        move();
+        move(0);
 
         // 每5秒开火一次（快速坦克3秒， Boss用八方射击）
         int fireInterval = (enemyType == EnemyType.FAST) ? 3000 : 5000;

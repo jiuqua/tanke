@@ -758,7 +758,7 @@ public class GameFrame extends Frame {
             }
         }
         
-        t.move();
+        t.move(this.moveSpeedBonus);
 
         // 绘制地雷
         for (int i = 0; i < mines.size(); i++) {
