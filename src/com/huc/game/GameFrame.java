@@ -84,7 +84,7 @@ public class GameFrame extends Frame {
         this.repaint();
 
         // 初始化敌军坦克（开局只有1个敌人）
-        Tank x = new Tank(380, 50, true);
+        Tank x = new Tank(380, 50, true, Tank.EnemyType.NORMAL, 2);
         tanks.add(x);
 
         // 初始化树木
@@ -628,6 +628,8 @@ public class GameFrame extends Frame {
         }
 
         // 初始化墙壁 - 地图边界和中间障碍
+        walls.clear();
+        waters.clear();
         // 上方墙壁（网格对齐：x=35*6=210, y=35*6=210）
         for (int i = 0; i < 8; i++) {
             walls.add(new Wall(210 + 35 * i, 210, false));
@@ -649,10 +651,6 @@ public class GameFrame extends Frame {
         for (int i = 0; i < 3; i++) {
             waters.add(new Water(500 + 35 * i, 300));
         }
-
-        // 初始化血量道具（放在玩家可以到达的位置）
-        bloods.add(new Blood(450, 250));
-        bloods.add(new Blood(150, 350));
 
         // 重置爱心
         bloods.clear();
@@ -698,6 +696,7 @@ public class GameFrame extends Frame {
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("黑体", Font.BOLD, 20));
             g2d.drawString("再次按 P 键可继续游戏", 270, 300);
+            repaint();
             return;
         }
 
