@@ -55,7 +55,7 @@ public class GameFrame extends Frame {
     private int defenseLevel = 0; // 防御力等级（每10级减免1点伤害）
     
     // 玩家射击冷却（初始2秒）
-    private long playerFireCooldown = 2000; // 玩家射击冷却时间（毫秒）
+    private long playerFireCooldown = 1500; // 玩家射击冷却时间（毫秒）
     private long lastPlayerFireTime = 0; // 上次射击时间
     
     // 强化提示信息
@@ -739,6 +739,7 @@ public class GameFrame extends Frame {
         
         // 绘制倒计时和波次（屏幕正上方）
         gps.setColor(Color.YELLOW);
+        gps.setFont(scoreFont);
         gps.drawString("倒计时: " + countdown + "s", 320, 50);
         gps.drawString("波次: " + wave, 430, 50);
 
