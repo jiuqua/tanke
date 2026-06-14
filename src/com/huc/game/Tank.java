@@ -41,6 +41,9 @@ public class Tank {
     private int currentHP;
     private EnemyType enemyType;
     
+    // 是否优先攻击基地（场上始终有一名敌人优先攻击基地）
+    private boolean isBaseAttacker = false;
+    
     public Tank(int x, int y, boolean enemy) {
         this.x = x;
         this.y = y;
@@ -141,6 +144,15 @@ public class Tank {
     // 获取敌人类型
     public EnemyType getEnemyType() {
         return enemyType;
+    }
+    
+    // 是否优先攻击基地
+    public boolean isBaseAttacker() {
+        return isBaseAttacker;
+    }
+    
+    public void setBaseAttacker(boolean baseAttacker) {
+        this.isBaseAttacker = baseAttacker;
     }
     
     // 是否可以放置地雷（布雷坦克）
@@ -271,7 +283,7 @@ public class Tank {
     }
     
     // 支持强化效果的开火方法
-    public void fire(int bulletCount, int scatterBullets, boolean hasPenetration) {
+    public void fire(int bulletCount, int scatterBullets, boolean hasPenetration, double maxRange) {
         if (!isAlive) return;
         
         int bx, by;
@@ -309,7 +321,7 @@ public class Tank {
                     offsetX = (int)((i - (bulletCount - 1) / 2.0) * 8);
                 }
             }
-            Bullet b = new Bullet(bx + offsetX, by + offsetY, realDirection, enemy, hasPenetration);
+            Bullet b = new Bullet(bx + offsetX, by + offsetY, realDirection, enemy, hasPenetration, maxRange);
             GameFrame.bullets.add(b);
         }
         
@@ -317,12 +329,12 @@ public class Tank {
         for (int i = 1; i <= scatterBullets; i++) {
             // 左侧散射
             int leftDir = (realDirection - i + 4) % 4;
-            Bullet leftBullet = new Bullet(bx, by, leftDir, enemy, hasPenetration);
+            Bullet leftBullet = new Bullet(bx, by, leftDir, enemy, hasPenetration, maxRange);
             GameFrame.bullets.add(leftBullet);
             
             // 右侧散射
             int rightDir = (realDirection + i) % 4;
-            Bullet rightBullet = new Bullet(bx, by, rightDir, enemy, hasPenetration);
+            Bullet rightBullet = new Bullet(bx, by, rightDir, enemy, hasPenetration, maxRange);
             GameFrame.bullets.add(rightBullet);
         }
     }
@@ -351,13 +363,30 @@ public class Tank {
             int a = rand.nextInt(100);
             if (a > 70) {
                 // 30%概率改变方向
-                // 主要朝向基地移动（基地位置：380, 500）
-                int targetX = 380;
-                int targetY = 500;
+                
+                // 检查场上是否有Boss
+                boolean hasBoss = GameFrame.hasBoss();
+                
+                // 决定攻击目标
+                int targetX, targetY;
+                
+                if (hasBoss) {
+                    // 有Boss在场，所有敌人优先攻击玩家
+                    targetX = GameFrame.getPlayerX();
+                    targetY = GameFrame.getPlayerY();
+                } else if (isBaseAttacker) {
+                    // 基地攻击者：朝向基地移动（基地位置：380, 500）
+                    targetX = 380;
+                    targetY = 500;
+                } else {
+                    // 其他敌人：优先攻击玩家
+                    targetX = GameFrame.getPlayerX();
+                    targetY = GameFrame.getPlayerY();
+                }
                 
                 // 根据位置决定主要方向
                 if (y < targetY - 50) {
-                    // 在基地上方，主要向下
+                    // 在目标上方，主要向下
                     if (x < targetX - 50) {
                         // 偏左，向右或向下
                         direction = rand.nextInt(10) < 7 ? 2 : 3;
@@ -368,9 +397,28 @@ public class Tank {
                         // 正上方，向下
                         direction = 3;
                     }
+                } else if (y > targetY + 50) {
+                    // 在目标下方，主要向上
+                    if (x < targetX - 50) {
+                        // 偏左，向右或向上
+                        direction = rand.nextInt(10) < 7 ? 2 : 1;
+                    } else if (x > targetX + 50) {
+                        // 偏右，向左或向上
+                        direction = rand.nextInt(10) < 7 ? 0 : 1;
+                    } else {
+                        // 正下方，向上
+                        direction = 1;
+                    }
                 } else {
-                    // 接近基地Y坐标，随机移动
-                    direction = rand.nextInt(4);
+                    // 接近目标Y坐标，根据X坐标调整
+                    if (x < targetX - 50) {
+                        direction = 2; // 向右
+                    } else if (x > targetX + 50) {
+                        direction = 0; // 向左
+                    } else {
+                        // 非常接近目标，随机移动
+                        direction = rand.nextInt(4);
+                    }
                 }
                 
                 realDirection = direction;

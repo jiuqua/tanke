@@ -14,11 +14,11 @@ import java.util.concurrent.TimeUnit;
 public class GameFrame extends Frame {
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
-    Tank t = new Tank(390, 500, false);
+    static Tank t = new Tank(390, 500, false); // 改为静态，供Tank类访问
     ScheduledExecutorService sche = Executors.newScheduledThreadPool(1);
     static List<Bullet> bullets = new ArrayList<Bullet>();
 
-    List<Tank> tanks = new ArrayList<Tank>();
+    static List<Tank> tanks = new ArrayList<Tank>(); // 改为静态，供Tank类访问
     List<Tree> trees = new ArrayList<>();
     static List<Wall> walls = new ArrayList<>();
     List<Water> waters = new ArrayList<>();
@@ -193,7 +193,8 @@ public class GameFrame extends Frame {
                 }
 
                 if (code == 70) { // F键开火
-                    t.fire(bulletCount, scatterBullets, hasBulletPenetration);
+                    double actualRange = 200 * bulletRangeBonus; // 实际射程 = 200 × bulletRangeBonus
+                    t.fire(bulletCount, scatterBullets, hasBulletPenetration, actualRange);
                 }
                 
                 if (code == 10) { // Enter键重新开始游戏
@@ -498,6 +499,47 @@ public class GameFrame extends Frame {
         return hasClimbAbility;
     }
     
+    // 检查场上是否有Boss（供Tank类调用）
+    public static boolean hasBoss() {
+        for (Tank tank : tanks) {
+            if (tank.getEnemyType() == Tank.EnemyType.BOSS && tank.isAlive) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // 获取玩家坦克位置（供Tank类调用）
+    public static int getPlayerX() {
+        return t.getX();
+    }
+    
+    public static int getPlayerY() {
+        return t.getY();
+    }
+    
+    // 管理基地攻击者
+    private void manageBaseAttacker() {
+        // 检查当前基地攻击者是否还活着
+        boolean hasBaseAttacker = false;
+        for (Tank tank : tanks) {
+            if (tank.isBaseAttacker() && tank.isAlive) {
+                hasBaseAttacker = true;
+                break;
+            }
+        }
+        
+        // 如果没有基地攻击者，指定一个新的（排除Boss）
+        if (!hasBaseAttacker && tanks.size() > 0) {
+            for (Tank tank : tanks) {
+                if (tank.isAlive && tank.getEnemyType() != Tank.EnemyType.BOSS) {
+                    tank.setBaseAttacker(true);
+                    break;
+                }
+            }
+        }
+    }
+    
     // 辅助方法：根据波次获取敌人类型
     private Tank.EnemyType getEnemyTypeForWave(int wave) {
         double rand = Math.random();
@@ -572,16 +614,7 @@ public class GameFrame extends Frame {
         fireInterval = 15000;
         defenseLevel = 0;
         
-        // 重置墙体（恢复初始墙体）
-        walls.clear();
-        walls.add(new Wall(345, 535, false));
-        walls.add(new Wall(380, 535, false));
-        walls.add(new Wall(415, 535, false));
-        walls.add(new Wall(345, 500, false));
-        walls.add(new Wall(415, 500, false));
-        walls.add(new Wall(345, 465, true));
-        walls.add(new Wall(380, 465, true));
-        walls.add(new Wall(415, 465, true));
+        // 保留地图墙体（不清空），只重置玩家状态
         
         // 重置爱心
         bloods.clear();
@@ -775,6 +808,9 @@ public class GameFrame extends Frame {
                 i--;
             }
         }
+        
+        // 管理基地攻击者（确保始终有一名敌人优先攻击基地）
+        manageBaseAttacker();
         
         // 绘制敌军坦克
         for (int i = 0; i < tanks.size(); i++) {
