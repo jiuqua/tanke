@@ -52,7 +52,6 @@ public class GameFrame extends Frame {
     private double bulletRangeBonus = 1.0; // 攻击射程加成（初始100%）
     private int scatterBullets = 0; // 散射子弹数量（环绕主弹道两侧）
     private boolean hasKillExplosion = false; // 击杀爆炸效果（30%几率触发）
-    private int fireInterval = 15000; // 回复间隔（初始15秒，逐步减少）
     private int defenseLevel = 0; // 防御力等级（每10级减免1点伤害）
     
     // 玩家射击冷却（初始2秒）
@@ -481,10 +480,8 @@ public class GameFrame extends Frame {
                     }
                     break;
                 case 7: // 回复速度（减少间隔）
-                    if (fireInterval > 1000) {
-                        fireInterval -= 1000;
-                        showPowerUpMessage("射击间隔 -1秒");
-                    }
+                    playerFireCooldown -= 1000;
+                    showPowerUpMessage("射击间隔 -1秒");
                     break;
                 case 8: // 防御力 +1
                     defenseLevel++;
@@ -619,7 +616,6 @@ public class GameFrame extends Frame {
         bulletRangeBonus = 1.0;
         scatterBullets = 0;
         hasKillExplosion = false;
-        fireInterval = 15000;
         defenseLevel = 0;
         playerFireCooldown = 2000; // 重置射击冷却为2秒
         lastPlayerFireTime = 0;
