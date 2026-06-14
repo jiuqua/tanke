@@ -591,7 +591,7 @@ public class GameFrame extends Frame {
         
         // 清空敌人
         tanks.clear();
-        Tank x = new Tank(380, 50, true);
+        Tank x = new Tank(380, 50, true, Tank.EnemyType.NORMAL, 2);
         tanks.add(x);
         
         // 清空子弹、爆炸、地雷
