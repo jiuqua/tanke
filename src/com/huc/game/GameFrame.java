@@ -55,6 +55,10 @@ public class GameFrame extends Frame {
     private int fireInterval = 15000; // 回复间隔（初始15秒，逐步减少）
     private int defenseLevel = 0; // 防御力等级（每10级减免1点伤害）
     
+    // 玩家射击冷却（初始2秒）
+    private long playerFireCooldown = 2000; // 玩家射击冷却时间（毫秒）
+    private long lastPlayerFireTime = 0; // 上次射击时间
+    
     // 强化提示信息
     private String powerUpMessage = "";
     private long powerUpMessageTime = 0;
@@ -193,8 +197,12 @@ public class GameFrame extends Frame {
                 }
 
                 if (code == 70) { // F键开火
-                    double actualRange = 200 * bulletRangeBonus; // 实际射程 = 200 × bulletRangeBonus
-                    t.fire(bulletCount, scatterBullets, hasBulletPenetration, actualRange);
+                    long currentTime = System.currentTimeMillis();
+                    if (currentTime - lastPlayerFireTime >= playerFireCooldown) {
+                        double actualRange = 200 * bulletRangeBonus; // 实际射程 = 200 × bulletRangeBonus
+                        t.fire(bulletCount, scatterBullets, hasBulletPenetration, actualRange);
+                        lastPlayerFireTime = currentTime;
+                    }
                 }
                 
                 if (code == 10) { // Enter键重新开始游戏
@@ -613,6 +621,8 @@ public class GameFrame extends Frame {
         hasKillExplosion = false;
         fireInterval = 15000;
         defenseLevel = 0;
+        playerFireCooldown = 2000; // 重置射击冷却为2秒
+        lastPlayerFireTime = 0;
         
         // 保留地图墙体（不清空），只重置玩家状态
         
